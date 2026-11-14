@@ -1,0 +1,56 @@
+# One public origin: SITE_DOMAIN serves the Next.js app, which proxies /api/v1/* to FastAPI over
+# the private Docker network. The API is never exposed to the internet.
+# Certificates: Let's Encrypt via Cloudflare DNS-01 (works behind Cloudflare's proxy).
+{
+
+	# Only Cloudflare reaches this server (Azure NSG allows 80/443 from Cloudflare ranges only),
+	# so its client-IP header can be trusted.
+	servers {
+		trusted_proxies static 173.245.48.0/20 103.21.244.0/22 103.22.200.0/22 103.31.4.0/22 141.101.64.0/18 108.162.192.0/18 190.93.240.0/20 188.114.96.0/20 197.234.240.0/22 198.41.128.0/17 162.158.0.0/15 104.16.0.0/13 104.24.0.0/14 172.64.0.0/13 131.0.72.0/22 2400:cb00::/32 2606:4700::/32 2803:f800::/32 2405:b500::/32 2405:8100::/32 2a06:98c0::/29 2c0f:f248::/32
+		client_ip_headers CF-Connecting-IP X-Forwarded-For
+	}
+}
+
+(common) {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+		resolvers 1.1.1.1
+	}
+	# Compress documents and assets only; event streams (Parakh live checks) must stay unbuffered.
+	encode zstd gzip {
+		match {
+			header Content-Type text/html*
+			header Content-Type text/css*
+			header Content-Type text/plain*
+			header Content-Type text/xml*
+			header Content-Type application/javascript*
+			header Content-Type application/json*
+			header Content-Type application/manifest+json*
+			header Content-Type application/xml*
+			header Content-Type image/svg+xml*
+		}
+	}
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		X-Frame-Options "SAMEORIGIN"
+		-Server
+	}
+}
+
+{$SITE_DOMAIN} {
+	import common
+	# SSE: flush every event immediately (Parakh live checks).
+	@sse path /api/checks /api/v1/checks/*/stream
+	reverse_proxy @sse web:3000 {
+		flush_interval -1
+	}
+	reverse_proxy web:3000
+}
+
+www.{$SITE_DOMAIN} {
+	import common
+	redir https://{$SITE_DOMAIN}{uri} permanent
+}

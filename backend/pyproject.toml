@@ -1,0 +1,65 @@
+[project]
+name = "oro-backend"
+version = "0.2.0"
+description = "ORO API: Parakh verification, Room, evidence pipeline and workers"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.8",
+    "pydantic-settings>=2.4",
+    "sqlalchemy[asyncio]>=2.0.30",
+    "asyncpg>=0.29",
+    "alembic>=1.13",
+    "redis>=5.0",
+    "celery[redis]>=5.4",
+    "httpx>=0.27",
+    "pyjwt>=2.9",
+    "cryptography>=44",
+    "pgvector>=0.4",
+    "python-multipart>=0.0.20",
+    "feedparser>=6.0",
+    "selectolax>=0.3",
+    "pypdfium2>=4.30",
+    "casparser>=1.4,<1.5",
+    "rapidfuzz>=3.9",
+    "numpy>=2.0",
+    "anthropic>=2.0",
+    "defusedxml>=0.7",
+    "pywebpush>=2.0,<3",
+]
+
+[project.optional-dependencies]
+# The embedding model (~1.2 GB) runs in its own container; the API doesn't need it.
+embed = [
+    "fastembed>=0.7",
+]
+
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "ruff>=0.6",
+    "fakeredis>=2.26",
+    "respx>=0.21",
+]
+
+[build-system]
+requires = ["setuptools>=70"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "ASYNC", "S"]
+ignore = ["S101", "E501"]  # formatter owns line length

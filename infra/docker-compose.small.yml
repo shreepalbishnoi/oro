@@ -1,0 +1,46 @@
+# For 2–4 GB servers (AWS t4g.small/medium, Lightsail, or this PC as a temporary host).
+# Layer on the main file:
+#   docker compose --env-file .env -f infra/docker-compose.yml -f infra/docker-compose.small.yml up -d
+# Keeps the web app; smaller Postgres; one API worker. The embedding model is off unless you add
+# `--profile embed` (needs ~1.2 GB more; worth it on 4 GB+): without it, search is keyword-only.
+services:
+  db:
+    command: >
+      postgres
+      -c shared_buffers=256MB
+      -c effective_cache_size=768MB
+      -c work_mem=8MB
+      -c maintenance_work_mem=64MB
+      -c max_connections=40
+      -c idle_in_transaction_session_timeout=60s
+    mem_limit: 896m
+
+  redis:
+    command: redis-server --appendonly yes --maxmemory 128mb --maxmemory-policy noeviction
+    mem_limit: 192m
+
+  embedder:
+    profiles: ["embed"]
+
+  api:
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1 --proxy-headers --forwarded-allow-ips "*"
+    environment:
+      EMBED_ENABLED: ${SMALL_EMBED_ENABLED:-false}
+    mem_limit: 448m
+
+  pipeline:
+    environment:
+      EMBED_ENABLED: ${SMALL_EMBED_ENABLED:-false}
+    mem_limit: 384m
+
+  worker:
+    command: celery -A app.worker worker -l info --concurrency 1
+    environment:
+      EMBED_ENABLED: ${SMALL_EMBED_ENABLED:-false}
+    mem_limit: 448m
+
+  beat:
+    mem_limit: 128m
+
+  web:
+    mem_limit: 448m

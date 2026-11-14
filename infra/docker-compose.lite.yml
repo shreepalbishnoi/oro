@@ -1,0 +1,48 @@
+# Low-memory local profile for a dev PC with ~6 GB RAM. Layer it on the main file:
+#   docker compose --env-file .env -f infra/docker-compose.yml -f infra/docker-compose.lite.yml up -d
+# Differences: smaller Postgres, one API worker, no embedding service (search falls back to
+# keyword-only full-text search; vectors are filled later on the server by the backfill loop).
+services:
+  db:
+    command: >
+      postgres
+      -c shared_buffers=128MB
+      -c effective_cache_size=384MB
+      -c work_mem=8MB
+      -c maintenance_work_mem=64MB
+      -c max_connections=40
+      -c idle_in_transaction_session_timeout=60s
+    mem_limit: 640m
+
+  redis:
+    command: redis-server --appendonly yes --maxmemory 96mb --maxmemory-policy noeviction
+    mem_limit: 128m
+
+  embedder:
+    profiles: ["embed"]  # not started unless asked for
+
+  api:
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1 --proxy-headers --forwarded-allow-ips "*"
+    environment:
+      EMBED_ENABLED: "false"
+      EMBED_URL: ""
+    mem_limit: 384m
+
+  pipeline:
+    environment:
+      EMBED_ENABLED: "false"
+      EMBED_URL: ""
+    mem_limit: 320m
+
+  worker:
+    command: celery -A app.worker worker -l info --concurrency 1
+    environment:
+      EMBED_ENABLED: "false"
+      EMBED_URL: ""
+    mem_limit: 384m
+
+  beat:
+    mem_limit: 128m
+
+  web:
+    profiles: ["web"]  # on a 6 GB PC, run the web app with `npm run build && npm start` instead

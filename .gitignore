@@ -1,0 +1,49 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Node
+node_modules/
+.next/
+out/
+
+# ML artifacts
+ml/**/data/
+ml/**/artifacts/
+*.onnx
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Playwright MCP screenshots/logs
+.playwright-mcp/
+
+# Personal data: never commit real statements or holdings exports
+docs/Portfolio_Holdings_*.csv
+*.cas.pdf
+
+# Server-side artifacts
+backups/
+.seeded
+infra/certs/
+infra/azure/.vm-ip
+
+# Local-only: AI tooling and internal planning/ops notes (not part of the public repo)
+.claude/
+skills-lock.json
+apps/web/AGENTS.md
+apps/web/CLAUDE.md
+docs/internal/
+docs/testing sample.txt
