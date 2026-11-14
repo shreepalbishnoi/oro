@@ -30,8 +30,8 @@ and to show investors only the verified news that touches their own money.
 
 ## Contents
 
-- [Why I built it](#why-i-built-it)
-- [What ORO does](#what-oro-does)
+- [Why ORO?](#why-oro)
+- [What ORO does?](#what-oro-does)
 - [Screenshots](#screenshots)
 - [What this project shows](#what-this-project-shows)
 - [Tech stack](#tech-stack)
@@ -46,18 +46,18 @@ and to show investors only the verified news that touches their own money.
 - [Security and privacy](#security-and-privacy)
 - [Problems I ran into](#problems-i-ran-into)
 - [What's next](#whats-next)
-- [About me](#about-me)
+- [About us](#about-us)
 
 ---
 
-## Why I built it
+## Why ORO?
 
 Most stock tips in India arrive on WhatsApp or Telegram: "₹4,200 crore order coming, buy before
 tomorrow", "SEBI-approved multibagger", "100% sure shot". Some are pump-and-dump schemes. Some are
 real news with one number changed. The truth is usually in a public BSE or NSE filing, but almost
 nobody digs it out before acting on a tip. I wanted a tool that does the digging in a few seconds.
 
-## What ORO does
+## What ORO does?
 
 | Product | What it does |
 |---|---|
@@ -95,7 +95,7 @@ nobody digs it out before acting on a tip. I wanted a tool that does the digging
 
 ## What this project shows
 
-I designed and built ORO on my own, end to end: product, design, frontend, backend, AI,
+We designed and built ORO, end to end: product, design, frontend, backend, AI,
 infrastructure and deployment. It runs in production on free AI tiers and student cloud credits.
 
 | Area | What I built |
@@ -358,11 +358,12 @@ flowchart LR
 
 More detail in [docs/PLAN.md](docs/PLAN.md).
 
-## About me
+## About us
 
-I'm [@shreepalbishnoi](https://github.com/shreepalbishnoi). I build full-stack web apps, AI and
-RAG features, data pipelines and the infrastructure to run them. I'm open to freelance and
-full-time work. Contact: `xxxxx@xxxxx.com`
+We build full-stack web apps, AI and
+RAG features, data pipelines and the infrastructure to run them. We're open to freelance and
+full-time work.
+Any enquirey or issues with website or curious to know more. Contact: `shreepalbishnoi360@gmail.com` [@shreepalbishnoi](https://github.com/shreepalbishnoi) or [@martial-gautam](https://github.com/Martial-Gautam)
 
 © 2026 ORO. All rights reserved. The code is here for people to read and review. Please ask
 before reusing it.
